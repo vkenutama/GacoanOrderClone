@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 
 namespace Gacoan.Backend.Repository;
 
@@ -11,6 +11,7 @@ public interface IRepository<T> where T : class
     Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    IQueryable<T> GetQueryable();
     
     // U
     Task UpdateAsync(Guid id, T updatedEntity, CancellationToken cancellationToken = default);
