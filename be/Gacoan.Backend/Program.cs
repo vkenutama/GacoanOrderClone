@@ -57,8 +57,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<Seeder>();
-
 
 // Add Controllers
 builder.Services.AddControllers();
@@ -136,9 +137,7 @@ app.UseAuthentication();
 // Add Authorization
 app.UseAuthorization();
 
-
 app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
-
