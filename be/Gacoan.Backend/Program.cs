@@ -1,6 +1,7 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Gacoan.Backend.Common.Mappings;
 using Gacoan.Backend.Database;
 using Gacoan.Backend.Models;
 using Gacoan.Backend.Repository;
@@ -55,6 +56,8 @@ builder.Services.AddAuthentication(options =>
 // DI
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<Seeder>();
 
 
 // Add Controllers
@@ -93,6 +96,12 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Add AutoMapper
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddMaps(typeof(Program).Assembly);
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -106,6 +115,10 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new Role(role));
         }
     }
+    
+    // Seeder
+    var seeder = scope.ServiceProvider.GetRequiredService<Seeder>();
+    await seeder.SeedAsync();
 }
 
 // Configure the HTTP request pipeline.

@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Gacoan.Backend.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +34,11 @@ public class Repository<T> : IRepository<T> where T : class
         CancellationToken cancellationToken = default)
     {
         return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public IQueryable<T> GetQueryable()
+    {
+        return _dbSet.AsQueryable();
     }
 
     public async Task UpdateAsync(Guid id, T updatedEntity, CancellationToken cancellationToken = default)
