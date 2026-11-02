@@ -1,5 +1,6 @@
-﻿using Gacoan.Backend.Models;
+using Gacoan.Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using DayOfWeek = Gacoan.Backend.Models.DayOfWeek;
 
 namespace Gacoan.Backend.Database;
 
@@ -42,6 +43,39 @@ public class Seeder
                     Name = productName,
                     Price = 12000m,
                     TypeId = mieCategory.Id
+                });
+            }
+        }
+
+        // 3. Pastikan minimal ada 1 outlet Restoran dan Jam Operasional
+        var restaurant = await _context.Restaurants.FirstOrDefaultAsync(r => r.Name == "Mie Gacoan Merr Surabaya");
+        if (restaurant == null)
+        {
+            restaurant = new Restaurant
+            {
+                Id = Guid.NewGuid(),
+                Name = "Mie Gacoan Merr Surabaya",
+                Contact = "081234567890",
+                MapsUrl = "https://maps.google.com/?q=Mie+Gacoan+Merr",
+                Latitude = -7.3112m,
+                Longitude = 112.7821m
+            };
+
+            await _context.Restaurants.AddAsync(restaurant);
+            await _context.SaveChangesAsync();
+
+            // Jam buka Senin - Minggu 09:00 - 22:00
+            var allDays = Enum.GetValues<DayOfWeek>();
+            foreach (var day in allDays)
+            {
+                await _context.OperationalHours.AddAsync(new OperationalHour
+                {
+                    Id = Guid.NewGuid(),
+                    RestaurantId = restaurant.Id,
+                    DayOfWeek = day,
+                    OpenTime = new TimeOnly(9, 0),
+                    CloseTime = new TimeOnly(22, 0),
+                    IsClosed = false
                 });
             }
         }
