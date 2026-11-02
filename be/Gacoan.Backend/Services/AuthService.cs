@@ -72,7 +72,7 @@ public class AuthService : IAuthService
         
         // Get user role
         var roles = await _userManager.GetRolesAsync(user);
-        var primaryRole = roles.First() ?? "Customer";
+        var primaryRole = roles.FirstOrDefault() ?? "Customer";
         
         // Generate JWT Token
         var token = GenerateJwtToken(user, primaryRole);
