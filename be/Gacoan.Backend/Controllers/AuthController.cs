@@ -1,16 +1,13 @@
-﻿using Gacoan.Backend.Dtos;
+using Gacoan.Backend.Dtos;
 using Gacoan.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gacoan.Backend.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
 
-    // ReSharper disable once ConvertToPrimaryConstructor
     public AuthController(IAuthService authService)
     {
         _authService = authService;
@@ -20,12 +17,31 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var result = await _authService.RegisterAsync(dto);
-        return StatusCode(result.StatusCode, result);
+        return HandleResult(result);
     }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var result = await _authService.LoginAsync(dto);
-        return StatusCode(result.StatusCode, result);
+        return HandleResult(result);
+    }
+
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
+    {
+        if (CurrentUserId == Guid.Empty)
+        {
+            return Unauthorized("User belum terautentikasi.");
+        }
+
+        return Ok(new
+        {
+            UserId = CurrentUserId,
+            UserName = CurrentUserName,
+            Email = CurrentUserEmail,
+            Role = CurrentUserRole,
+            IsAdmin
+        });
     }
 }
