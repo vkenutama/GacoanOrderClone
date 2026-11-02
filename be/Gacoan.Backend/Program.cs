@@ -4,6 +4,7 @@ using FluentValidation.AspNetCore;
 using Gacoan.Backend.Database;
 using Gacoan.Backend.Models;
 using Gacoan.Backend.Repository;
+using Gacoan.Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -52,8 +53,10 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add Repository
+// DI
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 // Add Controllers
 builder.Services.AddControllers();
