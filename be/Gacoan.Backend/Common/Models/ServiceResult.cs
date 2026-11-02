@@ -7,13 +7,13 @@ public class ServiceResult<T>
     public string? Message { get; set; }
     public int StatusCode { get; set; }
 
-    public static ServiceResult<T> Ok(T data, string? message = null)
+    public static ServiceResult<T> Ok(T data, string? message = null, int statusCode = 200)
         => new()
         {
             Success = true,
             Data = data,
             Message = message,
-            StatusCode = 200
+            StatusCode = statusCode
         };
 
     public static ServiceResult<T> Fail(string message, int statusCode = 400)
