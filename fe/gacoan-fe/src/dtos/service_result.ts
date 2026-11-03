@@ -1,7 +1,6 @@
-export interface ServiceResult<T>
-{
-    Success: boolean;
-    Data: T | undefined;
-    Message: string | undefined;
-    StatusCode: number;
+export interface ServiceResult<T> {
+    success: boolean;
+    data: T | undefined;
+    message: string | undefined;
+    statusCode: number;
 }

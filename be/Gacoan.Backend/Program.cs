@@ -16,6 +16,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Add SqLite
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddSqlite<AppDbContext>(connectionString);
@@ -131,13 +142,18 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("v1/swagger.json", "Gacoan API v1");
     });
 }
+
+app.UseHttpsRedirection();
+
+// Enable CORS (Wajib sebelum UseAuthentication & UseAuthorization)
+app.UseCors("AllowAll");
+
 // Add Authentication
 app.UseAuthentication();
 
 // Add Authorization
 app.UseAuthorization();
 
-app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();

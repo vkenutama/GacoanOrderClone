@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Gacoan.Backend.Common.Models;
@@ -58,23 +58,26 @@ public class AuthService : IAuthService
             Role = dto.Role
         };
 
-        return ServiceResult<AuthResponseDto>.Ok(response, "Registrasi berhasil.", StatusCodes.Status201Created);
+        return ServiceResult<AuthResponseDto>.Ok(response, "Registrasi berhasil", 200);
     }
 
     public async Task<ServiceResult<AuthResponseDto>> LoginAsync(LoginDto dto)
     {
-        // Get user by username
         var user = await _userManager.FindByNameAsync(dto.UserName);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+        if (user == null)
         {
-            return ServiceResult<AuthResponseDto>.Fail("Username atau password salah", StatusCodes.Status401Unauthorized);
+            return ServiceResult<AuthResponseDto>.Fail("Username atau password salah", 400);
         }
-        
-        // Get user role
+
+        var isValidPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
+        if (!isValidPassword)
+        {
+            return ServiceResult<AuthResponseDto>.Fail("Username atau password salah", 400);
+        }
+
         var roles = await _userManager.GetRolesAsync(user);
         var primaryRole = roles.FirstOrDefault() ?? "Customer";
-        
-        // Generate JWT Token
+
         var token = GenerateJwtToken(user, primaryRole);
 
         var response = new AuthResponseDto
@@ -88,6 +91,30 @@ public class AuthService : IAuthService
         return ServiceResult<AuthResponseDto>.Ok(response, "Berhasil login", 200);
     }
 
+    public async Task<ServiceResult<UserDetailDto>> GetCurrentUserAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            return ServiceResult<UserDetailDto>.Fail("User tidak ditemukan.", 404);
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var primaryRole = roles.FirstOrDefault() ?? "Customer";
+
+        var dto = new UserDetailDto
+        {
+            UserId = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            FullName = user.FullName ?? string.Empty,
+            Role = primaryRole,
+            IsAdmin = primaryRole == "Admin"
+        };
+
+        return ServiceResult<UserDetailDto>.Ok(dto, "Data profil user berhasil diambil.", 200);
+    }
+
     private string GenerateJwtToken(User user, string role)
     {
         var claims = new List<Claim>
@@ -95,7 +122,8 @@ public class AuthService : IAuthService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.UserName ?? string.Empty),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
-            new(ClaimTypes.Role, role)
+            new(ClaimTypes.Role, role),
+            new("FullName", user.FullName ?? string.Empty)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));

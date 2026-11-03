@@ -1,4 +1,4 @@
-﻿namespace Gacoan.Backend.Dtos;
+namespace Gacoan.Backend.Dtos;
 
 public record RegisterDto
 {
@@ -21,4 +21,14 @@ public record AuthResponseDto
     public string UserName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
+}
+
+public record UserDetailDto
+{
+    public Guid UserId { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+    public bool IsAdmin { get; set; }
 }

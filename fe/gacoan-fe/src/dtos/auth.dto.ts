@@ -12,8 +12,17 @@ export interface LoginDto{
 }
 
 export interface AuthResponseDto{
-    Token: string | undefined;
-    UserName: string | undefined;
-    Email: string | undefined;
-    Role: string | undefined;
+    token: string | undefined;
+    userName: string | undefined;
+    email: string | undefined;
+    role: string | undefined;
+}
+
+export interface UserDetailDto {
+    userId: string;
+    userName: string;
+    email: string;
+    fullName: string;
+    role: string;
+    isAdmin: boolean;
 }

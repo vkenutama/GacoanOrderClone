@@ -1,0 +1,1 @@
+export type pagesUrl = 'login' | 'signup' | '*';

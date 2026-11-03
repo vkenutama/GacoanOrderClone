@@ -28,20 +28,14 @@ public class AuthController : BaseApiController
     }
 
     [HttpGet("me")]
-    public IActionResult GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser()
     {
         if (CurrentUserId == Guid.Empty)
         {
             return Unauthorized("User belum terautentikasi.");
         }
 
-        return Ok(new
-        {
-            UserId = CurrentUserId,
-            UserName = CurrentUserName,
-            Email = CurrentUserEmail,
-            Role = CurrentUserRole,
-            IsAdmin
-        });
+        var result = await _authService.GetCurrentUserAsync(CurrentUserId);
+        return HandleResult(result);
     }
 }

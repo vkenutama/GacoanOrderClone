@@ -1,13 +1,20 @@
-import type { LoginDto } from "../dtos/auth.dto";
+import type { LoginDto, AuthResponseDto, RegisterDto, UserDetailDto } from "../dtos/auth.dto";
+import api from './axiosInstance';
+import type { ServiceResult } from '../dtos/service_result';
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_BASE_API_URL ?? "";
-const ENDPOINT = API_BASE_URL + "/api/Auth/"
+const ENDPOINT = "api/Auth/";
 
-export const coba = () => {
-    console.log(API_BASE_URL)
-    // debugger;
-}
+export const login = async (dto: LoginDto): Promise<ServiceResult<AuthResponseDto>> => {
+    const res: ServiceResult<AuthResponseDto> = (await api.post(ENDPOINT + 'login', dto)).data;
+    return res;
+};
 
-export const Login = async (dto: LoginDto) => {
-    
-}
+export const me = async (): Promise<ServiceResult<UserDetailDto>> => {
+    const res: ServiceResult<UserDetailDto> = (await api.get(ENDPOINT + 'me')).data;
+    return res;
+};
+
+export const signUp = async (dto: RegisterDto): Promise<ServiceResult<AuthResponseDto>> => {
+    const res: ServiceResult<AuthResponseDto> = (await api.post(ENDPOINT + 'register', dto)).data;
+    return res;
+};
